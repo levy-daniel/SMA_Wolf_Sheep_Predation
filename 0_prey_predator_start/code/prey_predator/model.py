@@ -28,12 +28,12 @@ class WolfSheep(Model):
     initial_sheep = 100
     initial_wolves = 50
 
-    sheep_reproduce = 0.04
+    sheep_reproduce = 0.09
     wolf_reproduce = 0.05
 
     wolf_gain_from_food = 20
 
-    grass = False
+    grass = True
     grass_regrowth_time = 30
     sheep_gain_from_food = 4
 
@@ -47,10 +47,10 @@ class WolfSheep(Model):
         width=20,
         initial_sheep=100,
         initial_wolves=50,
-        sheep_reproduce=0.04,
+        sheep_reproduce=0.09,
         wolf_reproduce=0.05,
         wolf_gain_from_food=20,
-        grass=False,
+        grass=True,
         grass_regrowth_time=30,
         sheep_gain_from_food=4,
     ):
@@ -92,12 +92,35 @@ class WolfSheep(Model):
 
         # Create sheep:
         # ... to be completed
+        for i in range(self.initial_sheep):
+            x = self.random.randrange(self.grid.width)
+            y = self.random.randrange(self.grid.height)
+
+            sheep = Sheep(unique_id = self.next_id(), pos = (x,y), model = self, moore = True, energy = 30)
+            self.schedule.add(sheep)
+            self.grid.place_agent(sheep, (x,y))
+
 
         # Create wolves
         # ... to be completed
+        for i in range(self.initial_wolves):
+            x = self.random.randrange(self.grid.width)
+            y = self.random.randrange(self.grid.height)
+
+            wolf = Wolf(unique_id = self.next_id(), pos = (x,y), model = self, moore = True, energy = 30)
+            self.schedule.add(wolf)
+            self.grid.place_agent(wolf, (x,y))
 
         # Create grass patches
         # ... to be completed
+        self.initial_grass_patch = 20
+        for i in range(self.initial_grass_patch):
+            x = self.random.randrange(self.grid.width)
+            y = self.random.randrange(self.grid.height)
+
+            grass = GrassPatch(unique_id = self.next_id(), pos = (x,y), model = self, fully_grown=True, countdown=grass_regrowth_time)
+            self.schedule.add(grass)
+            self.grid.place_agent(grass, (x,y))            
 
     def step(self):
         self.schedule.step()
@@ -108,6 +131,7 @@ class WolfSheep(Model):
         # ... to be completed
 
     def run_model(self, step_count=200):
-
+        for step in step_count:
+            self.step()
         # ... to be completed
 

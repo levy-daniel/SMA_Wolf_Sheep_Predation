@@ -14,12 +14,25 @@ def wolf_sheep_portrayal(agent):
 
     if type(agent) is Sheep:
         # ... to be completed
+        portrayal = {"Shape": "circle",
+                 "Filled": "true",
+                 "Layer": 0,
+                 "Color": "red",
+                 "r": 0.5}
 
     elif type(agent) is Wolf:
-        # ... to be completed
+        portrayal = {"Shape": "circle",
+                 "Filled": "true",
+                 "Layer": 0,
+                 "Color": "blue",
+                 "r": 0.5}        # ... to be completed
 
     elif type(agent) is GrassPatch:
-        # ... to be completed
+       portrayal = {"Shape": "circle",
+                 "Filled": "true",
+                 "Layer": 0,
+                 "Color": "green",
+                 "r": 0.5}         
 
     return portrayal
 
@@ -29,11 +42,23 @@ chart_element = ChartModule(
     [{"Label": "Wolves", "Color": "#AA0000"}, {"Label": "Sheep", "Color": "#666666"}]
 )
 
+height=20
+width=20 
+
 model_params = {
-    # ... to be completed
+    "height" : height,
+    "width" : width,
+    "initial_sheep" :  UserSettableParameter("slider", "Initial Number of Sheep", value=100, min_value=10, max_value=200, step=1),
+    "sheep_reproduce" :  UserSettableParameter("slider", "Probability of sheep reproduce", value=0.04, min_value=0.01, max_value=0.2, step=0.05),
+    "wolf_reproduce" :  UserSettableParameter("slider", "Probability of wolf reproduce", value=0.05, min_value=0.01, max_value=0.2, step=0.05),
+    "wolf_gain_from_food" :  UserSettableParameter("slider", "Energy won when eating 1 sheep", value=20, min_value=1, max_value=30, step=1),
+    "grass" :  WolfSheep.grass,
+    "grass_regrowth_time" :  UserSettableParameter("slider", "Grass regrowth time", value=30, min_value=10, max_value=100, step=1),
+    "sheep_gain_from_food" :  UserSettableParameter("slider", "Energy won when eating grass", value=4, min_value=1, max_value=30, step=1)   
+    # ... to be completed  
 }
 
 server = ModularServer(
     WolfSheep, [canvas_element, chart_element], "Prey Predator Model", model_params
 )
-server.port = 8521
+server.port = 8080
