@@ -79,7 +79,7 @@ class Wolf(RandomWalker):
             
         cellmates = self.model.grid.get_cell_list_contents([self.pos])
         for mates in cellmates:
-            if type(mates) is Sheep and self.energy < 5: #un loup ne manque que si il a faim et qu'il se situe sur la même case qu'un mouton 
+            if type(mates) is Sheep and self.energy < 4: #un loup ne manque que si il a faim et qu'il se situe sur la même case qu'un mouton 
                 self.energy += self.model.wolf_gain_from_food
                 self.model.grid.remove_agent(mates)
                 self.model.schedule.remove(mates)
