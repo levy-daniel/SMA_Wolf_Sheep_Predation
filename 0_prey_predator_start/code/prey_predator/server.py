@@ -28,12 +28,21 @@ def wolf_sheep_portrayal(agent):
                  "r": 0.5}        # ... to be completed
 
     elif type(agent) is GrassPatch:
-       portrayal = {"Shape": "circle",
-                 "Filled": "true",
-                 "Layer": 0,
-                 "Color": "green",
-                 "r": 0.5}         
-
+        if agent.fully_grown:
+        # ... to be completed
+            portrayal = {"Shape": "rect",
+                        "Color": "green",
+                        "Filled": "true",
+                        "Layer": 0,
+                        "w": 1,
+                        "h": 1}
+        else:
+            portrayal = {"Shape": "rect",
+                        "Color": "#ffffe0",
+                        "Filled": "true",
+                        "Layer": 0,
+                        "w": 1,
+                        "h": 1}
     return portrayal
 
 
@@ -49,6 +58,7 @@ model_params = {
     "height" : height,
     "width" : width,
     "initial_sheep" :  UserSettableParameter("slider", "Initial Number of Sheep", value=100, min_value=10, max_value=200, step=1),
+    "initial_wolves" :  UserSettableParameter("slider", "Initial Number of Wolf", value=25, min_value=10, max_value=200, step=1),
     "sheep_reproduce" :  UserSettableParameter("slider", "Probability of sheep reproduce", value=0.04, min_value=0.01, max_value=0.2, step=0.05),
     "wolf_reproduce" :  UserSettableParameter("slider", "Probability of wolf reproduce", value=0.05, min_value=0.01, max_value=0.2, step=0.05),
     "wolf_gain_from_food" :  UserSettableParameter("slider", "Energy won when eating 1 sheep", value=20, min_value=1, max_value=30, step=1),

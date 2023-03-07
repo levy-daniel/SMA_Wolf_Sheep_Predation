@@ -41,13 +41,13 @@ class Sheep(RandomWalker):
         #2. Créer l'agent
         #3. L'ajouter au scheduler 
         #4. Le placer sur la grille
-        p = random.random()
+        p = self.random.random()
         if p < self.model.sheep_reproduce:
-            babySheep = Sheep(self.model.next_id(), self.pos, self.model, True, self.energy)
+            babySheep = Sheep(self.model.next_id(), self.pos, self.model, self.moore, self.energy)
             self.model.schedule.add(babySheep)
-            self.model.grid.place_agent(babySheep, babySheep.pos)   
+            self.model.grid.place_agent(babySheep, self.pos)   
              
-        if self.energy < 0:
+        if self.energy <= 0:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
             
@@ -75,17 +75,18 @@ class Wolf(RandomWalker):
         if p < self.model.wolf_reproduce:
             babyWolf = Wolf(self.model.next_id(), self.pos, self.model, self.moore, self.energy)
             self.model.schedule.add(babyWolf)
-            self.model.grid.place_agent(babyWolf, babyWolf.pos)
+            self.model.grid.place_agent(babyWolf, self.pos)
             
         cellmates = self.model.grid.get_cell_list_contents([self.pos])
         for mates in cellmates:
-            if type(mates) is Sheep:
+            if type(mates) is Sheep and self.energy < 5: #un loup ne manque que si il a faim et qu'il se situe sur la même case qu'un mouton 
                 self.energy += self.model.wolf_gain_from_food
                 self.model.grid.remove_agent(mates)
                 self.model.schedule.remove(mates)
+                #ne peut pas manger tous les moutons d'un coup sur une même case, uniquement un à la fois 
                 break
                 
-        if self.energy < 0:
+        if self.energy <= 0:
             self.model.schedule.remove(self)
             self.model.grid.remove_agent(self)
                 # ... to be completed

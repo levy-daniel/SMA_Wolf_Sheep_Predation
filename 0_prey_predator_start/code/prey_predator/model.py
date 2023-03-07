@@ -113,14 +113,17 @@ class WolfSheep(Model):
 
         # Create grass patches
         # ... to be completed
-        self.initial_grass_patch = 20
-        for i in range(self.initial_grass_patch):
-            x = self.random.randrange(self.grid.width)
-            y = self.random.randrange(self.grid.height)
-
-            grass = GrassPatch(unique_id = self.next_id(), pos = (x,y), model = self, fully_grown=True, countdown=grass_regrowth_time)
-            self.schedule.add(grass)
-            self.grid.place_agent(grass, (x,y))            
+        # self.initial_grass_patch = 200
+        # for i in range(self.initial_grass_patch):
+        #     x = self.random.randrange(self.grid.width)
+        #     y = self.random.randrange(self.grid.height)
+        for i in range(self.grid.height):
+            for j in range(self.grid.width):
+                x = i
+                y = j
+                grass = GrassPatch(unique_id = self.next_id(), pos = (x,y), model = self, fully_grown=True, countdown=grass_regrowth_time)
+                self.schedule.add(grass)
+                self.grid.place_agent(grass, (x,y))            
 
     def step(self):
         self.schedule.step()
