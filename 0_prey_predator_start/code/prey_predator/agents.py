@@ -22,35 +22,48 @@ class Sheep(RandomWalker):
         """
         A model step. Move, then eat grass and reproduce.
         """
-        self.random_move()
-        self.energy -= 1
-        if self.model.grass :
+        
+        # Decrement energy by 1 at each step
+        self.energy -= 1 
+        
+        # Death
+        if self.energy <= 0:
+            # If energy is less than or equal to 0, remove agent from the grid and the scheduler
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
+            return  
+        
+        # If energy is greater than 0, move randomly
+        self.random_move()  # Move randomly in the neighboring cells (Moore)
+
+        # If grass has grown
+        if self.model.grass:
             cellmates = self.model.grid.get_cell_list_contents([self.pos])
             for mates in cellmates:
+                # If cell contains grass
                 if type(mates) is GrassPatch:
-                    #Idée : step de fully grown qui rapport plus ou moins d'énergie, if mates.fully_grown != True, ca apporte moins
-                    #est ce qu'on remove le carré d'herbe et on en refait pousser random dans les staps de l'agent grass ou juste on attend qu'il repousse au meme endroit
-                    #pour remanger
+                    # If grass is fully grown, eat it and increment energy by the gain from food
                     if mates.fully_grown:
                         self.energy += self.model.sheep_gain_from_food
                         mates.fully_grown = False
           
-         
-        #Reproduction step:
-        #1. Vérifier que la proba est respectée
-        #2. Créer l'agent
-        #3. L'ajouter au scheduler 
-        #4. Le placer sur la grille
-        p = self.random.random()
+        # Reproduction step:
+        # 1. Check if probability is met
+        # 2. Create a new sheep agent
+        # 3. Add the new sheep agent to the scheduler
+        # 4. Place the new sheep agent on the grid
+
+        # 1. Check if probability is met
+        p = random.random()
         if p < self.model.sheep_reproduce:
-            self.energy //= 2
+            # 2. Create a new sheep agent
+            self.energy //= 2  # The energy is divided between the parent and the child
             babySheep = Sheep(self.model.next_id(), self.pos, self.model, self.moore, self.energy)
+            # 3. Add the new sheep agent to the scheduler
             self.model.schedule.add(babySheep)
+            # 4. Place the new sheep agent on the grid
             self.model.grid.place_agent(babySheep, self.pos)   
-             
-        if self.energy <= 0:
-            self.model.grid.remove_agent(self)
-            self.model.schedule.remove(self)
+
             
 
 
@@ -63,35 +76,38 @@ class Wolf(RandomWalker):
 
     def __init__(self, unique_id, pos, model, moore, energy=None):
         super().__init__(unique_id, pos, model, moore=moore)
-        self.energy = energy
-        self.pos = pos
-        self.model = model
-        self.moore = moore
+        self.energy = energy  # set initial energy
+        self.pos = pos  # set initial position
+        self.model = model  # set model
+        self.moore = moore  # set type of movement
 
     def step(self):
-        self.random_move()
-        self.energy -=1
-        
-        p = random.random()
-        if p < self.model.wolf_reproduce:
-            self.energy //=2 
-            babyWolf = Wolf(self.model.next_id(), self.pos, self.model, self.moore, self.energy)
-            self.model.schedule.add(babyWolf)
-            self.model.grid.place_agent(babyWolf, self.pos)
-            
-        cellmates = self.model.grid.get_cell_list_contents([self.pos])
-        for mates in cellmates:
-            if type(mates) is Sheep and self.energy < 15: #un loup ne manque que si il a faim et qu'il se situe sur la même case qu'un mouton 
-                self.energy += self.model.wolf_gain_from_food
-                self.model.grid.remove_agent(mates)
-                self.model.schedule.remove(mates)
-                #ne peut pas manger tous les moutons d'un coup sur une même case, uniquement un à la fois 
-                break
-                
-        if self.energy <= 0:
-            self.model.schedule.remove(self)
-            self.model.grid.remove_agent(self)
-                # ... to be completed
+        self.energy -= 1  # decrease energy
+
+        # Death
+        if self.energy <= 0:  # if the wolf's energy is depleted
+            self.model.schedule.remove(self)  # remove the wolf from the schedule
+            self.model.grid.remove_agent(self)  # remove the wolf from the grid
+            return
+
+        self.random_move()  # move randomly
+        # Reproduction
+        p = random.random()  # generate a random number
+        if p < self.model.wolf_reproduce:  # if the number is less than the wolf's reproduction rate
+            self.energy //= 2  # reduce the energy of the parent wolf by half
+            babyWolf = Wolf(self.model.next_id(), self.pos, self.model, self.moore, self.energy)  # create a baby wolf
+            self.model.schedule.add(babyWolf)  # add the baby wolf to the schedule
+            self.model.grid.place_agent(babyWolf, self.pos)  # place the baby wolf in the grid
+
+        # Eating
+        cellmates = self.model.grid.get_cell_list_contents([self.pos])  # get the agents in the wolf's current cell
+        for mate in cellmates:
+            if isinstance(mate, Sheep) and self.energy < 15:  # if the wolf is hungry and there is a sheep in the cell
+                self.energy += self.model.wolf_gain_from_food  # increase the wolf's energy
+                self.model.grid.remove_agent(mate)  # remove the sheep from the grid
+                self.model.schedule.remove(mate)  # remove the sheep from the schedule
+                break  # stop eating after eating one sheep
+
 
 
 class GrassPatch(Agent):
@@ -114,8 +130,17 @@ class GrassPatch(Agent):
         self.countdown = countdown
         
     def step(self):
+        """
+        Update the state of the patch of grass at each step
+        """
+        # Check if the patch of grass is not fully grown
         if self.fully_grown == False:
             self.countdown -= 1
+            # Check if the countdown has reached zero
             if self.countdown == 0:
+                # Regrow the grass
                 self.fully_grown = True
                 self.countdown = self.model.grass_regrowth_time
+
+
+

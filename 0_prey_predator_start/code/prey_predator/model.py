@@ -91,50 +91,40 @@ class WolfSheep(Model):
         )
 
         # Create sheep:
-        # ... to be completed
         for i in range(self.initial_sheep):
+            # Selection of random positon on the grid 
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
-
+            # Creating and adding new sheep to the grid 
             sheep = Sheep(unique_id = self.next_id(), pos = (x,y), model = self, moore = True, energy = 30)
             self.schedule.add(sheep)
             self.grid.place_agent(sheep, (x,y))
 
 
         # Create wolves
-        # ... to be completed
         for i in range(self.initial_wolves):
+            # Selection of random positon on the grid 
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
-
+            # Creating and adding new wolf to the grid 
             wolf = Wolf(unique_id = self.next_id(), pos = (x,y), model = self, moore = True, energy = 30)
             self.schedule.add(wolf)
             self.grid.place_agent(wolf, (x,y))
 
         # Create grass patches
-        # ... to be completed
-        # self.initial_grass_patch = 200
-        # for i in range(self.initial_grass_patch):
-        #     x = self.random.randrange(self.grid.width)
-        #     y = self.random.randrange(self.grid.height)
-        for i in range(self.grid.height):
-            for j in range(self.grid.width):
-                x = i
-                y = j
+        # Initialize the grid with gras everywhere
+        for x in range(self.grid.height):
+            for y in range(self.grid.width):
                 grass = GrassPatch(unique_id = self.next_id(), pos = (x,y), model = self, fully_grown=True, countdown=grass_regrowth_time)
                 self.schedule.add(grass)
                 self.grid.place_agent(grass, (x,y))            
 
     def step(self):
         self.schedule.step()
-
         # Collect data
         self.datacollector.collect(self)
-
-        # ... to be completed
 
     def run_model(self, step_count=200):
         for step in step_count:
             self.step()
-        # ... to be completed
 
