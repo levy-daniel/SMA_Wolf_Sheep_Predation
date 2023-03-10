@@ -33,7 +33,7 @@ For the wolves agents here are the choices we have made:
 Each turn a wolf: 
 - Walks around with *random_move()* method.
 - Reproduces (asexually) if the probability is met and then see its energy divided by 2.
-- Eats sheep if he can reach one, only if he is hungry (energy below a certain value) and only one at the time.
+- Eats sheep if he can reach one, only if he is hungry (energy below a certain value) and maximum two on one turn.
 - Dies if its energy is too low.
 
 </br>

@@ -31,14 +31,14 @@ def wolf_sheep_portrayal(agent):
         if agent.fully_grown:
         # ... to be completed
             portrayal = {"Shape": "rect",
-                        "Color": "green",
+                        "Color": "#008631",
                         "Filled": "true",
                         "Layer": 0,
                         "w": 1,
                         "h": 1}
         else:
             portrayal = {"Shape": "rect",
-                        "Color": "#ffffe0",
+                        "Color": "#5ced73",
                         "Filled": "true",
                         "Layer": 0,
                         "w": 1,

@@ -45,6 +45,7 @@ class Sheep(RandomWalker):
                     # If grass is fully grown, eat it and increment energy by the gain from food
                     if mates.fully_grown:
                         self.energy += self.model.sheep_gain_from_food
+                        # Now the grass patch is not grown
                         mates.fully_grown = False
           
         # Reproduction step:
@@ -102,12 +103,10 @@ class Wolf(RandomWalker):
         # Eating
         cellmates = self.model.grid.get_cell_list_contents([self.pos])  # get the agents in the wolf's current cell
         for mate in cellmates:
-            if isinstance(mate, Sheep) and self.energy < 15:  # if the wolf is hungry and there is a sheep in the cell
+            if isinstance(mate, Sheep) and self.energy < self.model.wolf_gain_from_food*2:  # if the wolf is hungry and there is a sheep in the cell
                 self.energy += self.model.wolf_gain_from_food  # increase the wolf's energy
                 self.model.grid.remove_agent(mate)  # remove the sheep from the grid
                 self.model.schedule.remove(mate)  # remove the sheep from the schedule
-                break  # stop eating after eating one sheep
-
 
 
 class GrassPatch(Agent):
@@ -140,6 +139,7 @@ class GrassPatch(Agent):
             if self.countdown == 0:
                 # Regrow the grass
                 self.fully_grown = True
+                # Reset the timer
                 self.countdown = self.model.grass_regrowth_time
 
 
